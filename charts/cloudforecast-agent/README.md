@@ -1,3 +1,4 @@
 
 
-    helm upgrade --install barometer .
+    helm upgrade --install barometer . \
+        --set barometerAgent.apiKey=abcdefgh

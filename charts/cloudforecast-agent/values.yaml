@@ -5,6 +5,14 @@
 replicaCount: 1
 
 barometerAgent:
+  # API key to send data back to the Cloudforecast Barometer.
+  # Alternatively, provide a Secret name and key that holds the Barometer API key.
+  # One of the two is required.
+  apiKey: ''
+  apiKeySecret:
+    secretName: ''
+    key: ''
+
   # Cluster-internal URL (and optionally, port) for the Prometheus HTTP API.
   # Leave blank if using the Prometheus instance installed with the chart.
   # If using an already-existing Prometheus instance, must be provided.
@@ -77,8 +85,6 @@ serviceAccount:
 rbac:
   create: true
 
-server: {}
-
 ## Dependencies
 
 # Values for configuring the deployment of Prometheus
@@ -89,18 +95,31 @@ server: {}
 #   https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus/values.yaml
 prometheus:
   enabled: true
+
+  server:
+    enabled: true
+
+  # kube-state-metrics is installed via the Prometheus chart.
+  kubeStateMetrics:
+    enabled: true
+
+  # node-exporter is installed via the Prometheus chart.
+  nodeExporter:
+    enabled: true
+
   alertmanager:
     enabled: false
+
   pushgateway:
     enabled: false
 
-  # Prometheus chart comes with kube-state-metrics by default, so it must be
-  # excluded from this subchart since it is installed separately by the cloudforecast-agent chart
-  kubeStateMetrics:
-    enabled: false
+  serviceAccounts:
+    alertmanager:
+      create: false
+    pushgateway:
+      create: false
+    server:
+      create: true
 
-kubeStateMetrics:
-  enabled: true
-
-nodeExporter:
-  enabled: true
+# This is needed to avoid a nil pointer error in the Prometheus subchart
+server: {}

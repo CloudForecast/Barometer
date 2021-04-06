@@ -27,13 +27,3 @@ dependencies:
     version: '13.3.3'
     repository: 'https://prometheus-community.github.io/helm-charts'
     condition: prometheus.enabled
-
-  - name: kube-state-metrics
-    version: '2.13.0'
-    repository: 'https://kubernetes.github.io/kube-state-metrics'
-    condition: kubeStateMetrics.enabled
-
-  - name: prometheus-node-exporter
-    version: '1.16.2'
-    repository: 'https://prometheus-community.github.io/helm-charts'
-    condition: nodeExporter.enabled

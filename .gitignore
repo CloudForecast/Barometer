@@ -17,4 +17,6 @@
 # Helm
 *.tgz
 
+.idea/
+
 scope.md
