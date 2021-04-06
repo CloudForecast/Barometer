@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "cloudforecast-agent.fullname" . }}-config
+  labels:
+    {{- include "cloudforecast-agent.labels" . | nindent 4 }}
+data:
+
+  {{ if .Values.barometerAgent.prometheusUrlOverride }}
+  CLOUDFORECAST_PROMETHEUS_HTTP_API_URL: '{{ .Values.barometerAgent.prometheusUrlOverride }}'
+  {{ else if .Values.prometheus.enabled }}
+  CLOUDFORECAST_PROMETHEUS_HTTP_API_URL: 'http://{{ template "prometheus.server.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:9090'
+  {{- else -}}
+    {{- fail "if not using the chart-native Prometheus, a Prometheus URL must be provided" -}}
+  {{- end -}}
