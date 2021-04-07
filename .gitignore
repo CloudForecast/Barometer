@@ -20,3 +20,5 @@
 .idea/
 
 scope.md
+skaffold.yaml
+kind.yaml

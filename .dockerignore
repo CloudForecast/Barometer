@@ -1,0 +1,6 @@
+
+charts/
+test/
+*.md
+.gitignore
+skaffold.yaml
