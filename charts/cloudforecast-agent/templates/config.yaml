@@ -10,6 +10,8 @@ data:
   CLOUDFORECAST_PROMETHEUS_HTTP_API_URL: '{{ .Values.barometerAgent.prometheusUrlOverride }}'
   {{ else if .Values.prometheus.enabled }}
   CLOUDFORECAST_PROMETHEUS_HTTP_API_URL: 'http://{{ template "prometheus.server.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:9090'
-  {{- else -}}
+  {{ else }}
     {{- fail "if not using the chart-native Prometheus, a Prometheus URL must be provided" -}}
-  {{- end -}}
+  {{ end }}
+
+  CLOUDFORECAST_BAROMETER_CLUSTER_UUID: '{{ required "A cluster UUID is required to identify the monitored Kubernetes cluster" .Values.barometerAgent.clusterUuid }}'

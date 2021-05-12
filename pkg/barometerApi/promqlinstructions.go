@@ -1,8 +1,10 @@
 package barometerApi
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
-const PROMQL_INSTRUCTION_PATH = "/promql"
+const PromqlInstructionPath = "/api/barometer/v1/promql_instructions"
 
 type PromQlConfiguration struct {
 	StartTs int `json:"start_ts"`
@@ -10,13 +12,15 @@ type PromQlConfiguration struct {
 	StepSec int `json:"step_sec"`
 }
 
+type PromQlQuery string
+
 type PromQlQueryInstruction struct {
 	Configurations []PromQlConfiguration `json:"promql_configurations"`
-	Queries map[string]string `json:"promql_queries"`
+	Queries map[string]PromQlQuery `json:"promql_queries"`
 }
 
 func (b BarometerApi) GetPromQlInstructions() (*PromQlQueryInstruction, error) {
-	response, err := b.makeGetRequest(PROMQL_INSTRUCTION_PATH)
+	response, err := b.makeGetRequest(PromqlInstructionPath)
 	if err != nil {
 		return nil, err
 	}
@@ -27,3 +31,4 @@ func (b BarometerApi) GetPromQlInstructions() (*PromQlQueryInstruction, error) {
 	}
 	return &instructions, nil
 }
+

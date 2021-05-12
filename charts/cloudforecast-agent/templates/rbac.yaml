@@ -6,11 +6,13 @@ metadata:
   labels:
     {{- include "cloudforecast-agent.labels" . | nindent 4 }}
 rules:
-  - apiGroups: [""]
+  - apiGroups: ["", "apps", "extensions"]
     verbs: [get, list]
     resources:
     - pods
-    - deploys
+    - deployments
+    - jobs
+    - cronjobs
     - services
     - endpoints
     - nodes

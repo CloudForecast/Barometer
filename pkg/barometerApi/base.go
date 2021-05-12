@@ -4,19 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 	"io/ioutil"
 	"net/http"
 	"time"
 )
 
-const BAROMETER_API_URL = "http://localhost"
-
-var barometerApiKey string
-
-func init() {
-	barometerApiKey = viper.GetString("apiKey")
-}
+const BAROMETER_API_URL = "https://barometer.perfectweather.io"
 
 type ApiClient interface {
 	makePostRequest(interface{}) (int, error)
@@ -24,16 +19,27 @@ type ApiClient interface {
 
 	GetApiKey() string
 	GetPromQlInstructions() (*PromQlQueryInstruction, error)
+	GetKubeInstructions() (*KubeQueryInstruction, error)
 
 	SendHealthCheckEvent() error
+	SendK8sAPIResultsEvent(BarometerK8sApiResultsEventData) error
+	SendExceptionEvent(inputError error) error
 }
 
 type BarometerApi struct {
 	barometerApiKey string
+	clusterUUID string
+	HTTPClient *http.Client
 }
 
-func NewBarometerApi(apiKey string) BarometerApi {
-	return BarometerApi{barometerApiKey: apiKey}
+func NewBarometerApi(apiKey string, clusterUUID string) BarometerApi {
+	return BarometerApi{
+		barometerApiKey: apiKey,
+		clusterUUID: clusterUUID,
+		HTTPClient: &http.Client{
+			Timeout: 5 * time.Second,
+		},
+	}
 }
 
 func (b BarometerApi) GetApiKey() string {
@@ -42,17 +48,14 @@ func (b BarometerApi) GetApiKey() string {
 
 func (b BarometerApi) makeGetRequest(path string) ([]byte, error) {
 	var request *http.Request
-	timeout := 5 * time.Second
-	client := http.Client{
-		Timeout: timeout,
-	}
 
-	request, err := http.NewRequest("GET", fmt.Sprint(BAROMETER_API_URL, path), bytes.NewBuffer([]byte{}))
+	request, err := http.NewRequest("GET", fmt.Sprint(BAROMETER_API_URL, path), nil)
 	if err != nil {
 		return []byte{}, err
 	}
-	request.Header.Set("X-API-Key", barometerApiKey)
-	resp, err := client.Do(request)
+	request.Header.Set("BM-API-Key", b.barometerApiKey)
+	request.Header.Set("BM-Cluster-UUID", b.clusterUUID)
+	resp, err := b.HTTPClient.Do(request)
 	if err != nil {
 		return []byte{}, err
 	}
@@ -66,14 +69,11 @@ func (b BarometerApi) makeGetRequest(path string) ([]byte, error) {
 }
 
 func (b BarometerApi) makePostRequest(payload interface{}) (statusCode int, err error) {
+	log.Debug().Msgf("before converting payload to JSON: %v", payload)
 	jsonData, err := json.Marshal(payload)
+	log.Debug().Msgf("POSTing this JSON: %s", jsonData)
 	if err != nil {
 		return
-	}
-
-	timeout := 5 * time.Second
-	client := http.Client{
-		Timeout: timeout,
 	}
 
     var request *http.Request
@@ -81,14 +81,15 @@ func (b BarometerApi) makePostRequest(payload interface{}) (statusCode int, err 
 		return
 	}
 	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("X-API-Key", barometerApiKey)
+	request.Header.Set("BM-API-Key", b.barometerApiKey)
+	request.Header.Set("BM-Cluster-UUID", b.clusterUUID)
 
 	dryRun := viper.GetBool("dryrun")
 	if dryRun {
 		return 200, nil
 	}
 
-	resp, err := client.Do(request)
+	resp, err := b.HTTPClient.Do(request)
 	if err != nil {
 		return
 	}

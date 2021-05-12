@@ -2,8 +2,8 @@ package pkg
 
 import (
 	"github.com/CloudForecast/Barometer/pkg/barometerApi"
-	"time"
 	"github.com/go-co-op/gocron"
+	"time"
 )
 
 func sendHealthCheck(b barometerApi.ApiClient) error {
@@ -12,7 +12,7 @@ func sendHealthCheck(b barometerApi.ApiClient) error {
 
 func BeginHealthChecks(b barometerApi.ApiClient) (func(), error) {
 	s := gocron.NewScheduler(time.UTC)
-	_, err := s.Every(5).Minutes().SingletonMode().Do(func() {
+	_, err := s.Every(1).Minutes().SingletonMode().Do(func() {
 		_ = sendHealthCheck(b)
 	})
 	if err != nil {

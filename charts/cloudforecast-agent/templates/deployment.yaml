@@ -29,15 +29,16 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.image }}"
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          args: [agent, --loglevel, debug]
           env:
             {{ if .Values.barometerAgent.apiKey }}
-            - name: BAROMETER_API_KEY
+            - name: CLOUDFORECAST_BAROMETER_API_KEY
               value: {{ .Values.barometerAgent.apiKey | quote }}
             {{ end }}
             {{ if .Values.barometerAgent.apiKeySecret.secretName }}
-            - name: BAROMETER_API_KEY
+            - name: CLOUDFORECAST_BAROMETER_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.barometerAgent.apiKeySecret.secretName | quote }}

@@ -8,8 +8,6 @@ import (
 	"os"
 )
 
-var LogLevel string
-var ApiKey string
 var GlobalViper *viper.Viper
 
 var RootCmd = &cobra.Command{
@@ -44,19 +42,20 @@ func Execute() {
 }
 
 func init() {
-	RootCmd.PersistentFlags().StringVar(&LogLevel, "loglevel", "info", "minimum log level to print")
-	RootCmd.PersistentFlags().StringVar(&ApiKey, "apikey", "", "Cloudforecast Barometer API key")
+	RootCmd.PersistentFlags().String("loglevel", "info", "minimum log level to print")
+	RootCmd.PersistentFlags().String("api-key", "", "Cloudforecast Barometer API key")
+	RootCmd.PersistentFlags().String("cluster-uuid", "", "Cloudforecast-provided UUID for the Kubernetes cluster")
 }
 
 func initializeConfig(cmd *cobra.Command, args []string) error {
-	viper.SetEnvPrefix("cloudforecast")
-
 	_ = viper.BindPFlag("loglevel", cmd.Flags().Lookup("loglevel"))
 	zerolog.SetGlobalLevel(convertLogLevelToZerolog(viper.GetString("loglevel")))
 
-	_ = viper.BindEnv("prometheusUrl", "PROMETHEUS_HTTP_API_URL")
-	_ = viper.BindEnv("apiKey", "BAROMETER_API_KEY")
-	_ = viper.BindPFlag("apiKey", cmd.Flags().Lookup("apikey"))
+	_ = viper.BindEnv("prometheusUrl", "CLOUDFORECAST_PROMETHEUS_HTTP_API_URL")
+	_ = viper.BindPFlag("apiKey", cmd.Flags().Lookup("api-key"))
+	_ = viper.BindEnv("apiKey", "CLOUDFORECAST_BAROMETER_API_KEY")
+	_ = viper.BindPFlag("clusterUUID", cmd.Flags().Lookup("cluster-uuid"))
+	_ = viper.BindEnv("clusterUUID", "CLOUDFORECAST_BAROMETER_CLUSTER_UUID")
 
 	return nil
 }

@@ -13,16 +13,16 @@ barometerAgent:
     secretName: ''
     key: ''
 
+  # UUID of the monitored Kubernetes cluster, provided by Cloudforecast. Required.
+  clusterUuid: ''
+
   # Cluster-internal URL (and optionally, port) for the Prometheus HTTP API.
   # Leave blank if using the Prometheus instance installed with the chart.
   # If using an already-existing Prometheus instance, must be provided.
   prometheusUrlOverride: ''
 
-image:
-  repository: nginx
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+imagePullPolicy: IfNotPresent
+image: ''
 
 imagePullSecrets: []
 nameOverride: ""

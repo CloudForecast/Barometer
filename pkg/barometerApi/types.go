@@ -10,21 +10,28 @@ const (
 
 type BarometerEvent struct {
 	EventKey BarometerEventType     `json:"event_key"`
-	Event    map[string]interface{} `json:"event"`
+	Event    map[string]interface{} `json:"event_data"`
 }
 
 type BarometerHealthCheckEventData struct {}
 
 type BarometerExceptionEventData struct {
-	Message string `json:"message"`
+	ErrorBool bool `json:"error" mapstructure:"error"`
+	Message string `json:"message" mapstructure:"message"`
+}
+
+// Error implements the error interface on BarometerExceptionEventData
+//  so it can be passed around or used to wrap other errors conveniently
+func (d BarometerExceptionEventData) Error() string {
+	return d.Message
 }
 
 type BarometerPromQlResultsEventData struct {
-	PromQlResults []PromQLResult `json:"promql_results"`
+	PromQlResults []PromQLResult `json:"promql_results" mapstructure:"promql_results"`
 }
 
 type BarometerK8sApiResultsEventData struct {
-	K8sClusterInformation map[string]interface{} `json:"k8s_cluster_information"`
+	K8sClusterInformation map[string][]interface{} `json:"k8s_cluster_information" mapstructure:"k8s_cluster_information"`
 }
 
 type PromQLResult struct {

@@ -9,8 +9,8 @@ COPY go.mod go.sum /code/
 RUN go mod download
 
 COPY . /code/
-RUN go build -o /bin/cloudforecast-barometer
+RUN go build -o /bin/cloudforecast-agent
 
 FROM alpine:latest
-COPY --from=build /bin/cloudforecast-barometer /bin/cloudforecast-barometer
-ENTRYPOINT ["/bin/cloudforecast-barometer"]
+COPY --from=build /bin/cloudforecast-agent /bin/cloudforecast-agent
+ENTRYPOINT ["/bin/cloudforecast-agent"]

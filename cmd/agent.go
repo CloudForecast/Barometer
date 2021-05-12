@@ -22,11 +22,12 @@ var agentCmd = &cobra.Command{
 
 func run(cmd *cobra.Command, args []string) error {
 	apiKey := viper.GetString("apiKey")
+	clusterUUID := viper.GetString("clusterUUID")
 	if apiKey == "" {
 		return errors.New("a Cloudforecast api key is required")
 	}
 
-	client := barometerApi.NewBarometerApi(apiKey)
+	client := barometerApi.NewBarometerApi(apiKey, clusterUUID)
 
 	gracefulExit, err := pkg.RunAll(client)
 	if err != nil {
