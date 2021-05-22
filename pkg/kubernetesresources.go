@@ -3,10 +3,12 @@ package pkg
 import (
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
+	"github.com/spf13/viper"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
 )
 
 var (
@@ -20,14 +22,15 @@ func Setup() *rest.Config {
 	}
 
 	log.Debug().Msg("setting up kubeconfig for first time...")
-	config, err := rest.InClusterConfig()
+	k := viper.GetString("kubeconfig")
+	// if no kubeconfig is passed, k is "", which will result in inClusterConfig.
+	config, err := clientcmd.BuildConfigFromFlags("", k)
 	if err != nil {
 		panic(err)
 	}
 	kubeConfig = config
 	return kubeConfig
 }
-
 
 func getKubeClient() (dynamic.Interface, error) {
 	config := Setup()
@@ -63,8 +66,8 @@ func DiscoverKubeResources() (map[string]schema.GroupVersionResource, error) {
 	for _, resourceList := range resourceLists {
 		for _, resource := range resourceList.APIResources {
 			resources[resource.Name] = schema.GroupVersionResource{
-				Group: resource.Group,
-				Version: resource.Version,
+				Group:    resource.Group,
+				Version:  resource.Version,
 				Resource: resource.Name,
 			}
 		}

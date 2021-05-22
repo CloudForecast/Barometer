@@ -15,6 +15,10 @@ type ErrorReporter func(error)
 
 func fetchKubernetesResources(resourceTypes []string, errorReporter ErrorReporter) (map[string][]resource.Info, error) {
 	configFlags := genericclioptions.NewConfigFlags(true)
+	// This is a bit hacky, but will work
+	if k := viper.GetString("kubeconfg"); k != "" {
+		configFlags.KubeConfig = &k
+	}
 
 	builder := resource.NewBuilder(configFlags)
 	builder = builder.Unstructured().AllNamespaces(true).SelectAllParam(true)
@@ -39,7 +43,7 @@ func fetchKubernetesResources(resourceTypes []string, errorReporter ErrorReporte
 
 	result := builder.ResourceTypes(filteredResourceTypes...).Do()
 	outputResults := make(map[string][]resource.Info)
-	err := result.Visit(func (info *resource.Info, err error) error {
+	err := result.Visit(func(info *resource.Info, err error) error {
 		log.Debug().Msgf("handling resource.Info: %v", *info)
 		if err != nil {
 			log.Error().Err(err).Msgf("received error on resource item")
@@ -83,11 +87,11 @@ func fetchAndRunKubeInstructions(b barometerApi.ApiClient) (*barometerApi.Barome
 	}
 
 	dryRun := viper.GetBool("dryrun")
-	var errorReporter func (err error)
+	var errorReporter func(err error)
 	if dryRun {
-		errorReporter = func (err error) {}
+		errorReporter = func(err error) {}
 	} else {
-		errorReporter = func (err error) {
+		errorReporter = func(err error) {
 			_ = b.SendExceptionEvent(err)
 		}
 	}
@@ -103,6 +107,7 @@ func fetchAndRunKubeInstructions(b barometerApi.ApiClient) (*barometerApi.Barome
 			var obj interface{}
 			// TODO: find way to turn info or runtime.Object into the actual object data
 			err := mapstructure.Decode(i.Object, &obj)
+			i.Object.GetObjectKind()
 			if err != nil {
 				panic(err)
 			}
