@@ -52,7 +52,6 @@ func initializeConfig(cmd *cobra.Command, args []string) error {
 	_ = viper.BindPFlag("loglevel", cmd.Flags().Lookup("loglevel"))
 	zerolog.SetGlobalLevel(convertLogLevelToZerolog(viper.GetString("loglevel")))
 
-	_ = viper.BindEnv("prometheusUrl", "CLOUDFORECAST_PROMETHEUS_HTTP_API_URL")
 	_ = viper.BindPFlag("apiKey", cmd.Flags().Lookup("api-key"))
 	_ = viper.BindEnv("apiKey", "CLOUDFORECAST_BAROMETER_API_KEY")
 	_ = viper.BindPFlag("clusterUUID", cmd.Flags().Lookup("cluster-uuid"))

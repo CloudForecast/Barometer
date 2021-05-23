@@ -21,6 +21,9 @@ barometerAgent:
   # If using an already-existing Prometheus instance, must be provided.
   prometheusUrlOverride: ''
 
+  # Any additional CLI arguments to supply to the Cloudforecast agent
+  additionalArgs: []
+
 imagePullPolicy: IfNotPresent
 image: ''
 

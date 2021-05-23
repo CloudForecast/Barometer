@@ -8,15 +8,19 @@ const PromqlInstructionPath = "/api/barometer/v1/promql_instructions"
 
 type PromQlConfiguration struct {
 	StartTs int `json:"start_ts"`
-	EndTs int `json:"end_ts"`
+	EndTs   int `json:"end_ts"`
 	StepSec int `json:"step_sec"`
 }
 
+// PromQlQueryName is the name of an individual Prometheus query provided by the Barometer API
+type PromQlQueryName string
+
+// PromQlQuery is a string containing the query itself to send to Prometheus
 type PromQlQuery string
 
 type PromQlQueryInstruction struct {
-	Configurations []PromQlConfiguration `json:"promql_configurations"`
-	Queries map[string]PromQlQuery `json:"promql_queries"`
+	Configurations []PromQlConfiguration           `json:"promql_configurations"`
+	Queries        map[PromQlQueryName]PromQlQuery `json:"promql_queries"`
 }
 
 func (b BarometerApi) GetPromQlInstructions() (*PromQlQueryInstruction, error) {
@@ -31,4 +35,3 @@ func (b BarometerApi) GetPromQlInstructions() (*PromQlQueryInstruction, error) {
 	}
 	return &instructions, nil
 }
-

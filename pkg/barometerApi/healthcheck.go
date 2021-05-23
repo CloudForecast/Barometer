@@ -7,8 +7,8 @@ import (
 
 func NewHealthCheckEvent() BarometerEvent {
 	return BarometerEvent{
-		EventKey: HealthCheck,
-		Event: make(map[string]interface{}),
+		EventType: HealthCheck,
+		Event:     make(map[string]interface{}),
 	}
 }
 

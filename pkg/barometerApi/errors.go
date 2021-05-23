@@ -10,13 +10,13 @@ func NewExceptionEvent(err error) BarometerEvent {
 	var outputData map[string]interface{}
 	eventData := BarometerExceptionEventData{
 		ErrorBool: true,
-		Message: err.Error(),
+		Message:   err.Error(),
 	}
 	mapstructure.Decode(eventData, &outputData)
 
 	return BarometerEvent{
-		EventKey: Exception,
-		Event: outputData,
+		EventType: Exception,
+		Event:     outputData,
 	}
 }
 

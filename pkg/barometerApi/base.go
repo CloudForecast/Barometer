@@ -11,8 +11,11 @@ import (
 	"time"
 )
 
-const BAROMETER_API_URL = "https://barometer.perfectweather.io"
+const BAROMETER_API_BASE = "https://barometer.perfectweather.io"
+const BAROMETER_API_EVENTS_PATH = "/api/barometer/v1/events"
 
+// This should likely be broken up into smaller client interfaces,
+// as we only have it as an interface for now to enable easier testing later
 type ApiClient interface {
 	makePostRequest(interface{}) (int, error)
 	makeGetRequest(string) ([]byte, error)
@@ -23,19 +26,20 @@ type ApiClient interface {
 
 	SendHealthCheckEvent() error
 	SendK8sAPIResultsEvent(BarometerK8sApiResultsEventData) error
+	SendPromQlResultsEvent(PromQLResult) error
 	SendExceptionEvent(inputError error) error
 }
 
 type BarometerApi struct {
 	barometerApiKey string
-	clusterUUID string
-	HTTPClient *http.Client
+	clusterUUID     string
+	HTTPClient      *http.Client
 }
 
 func NewBarometerApi(apiKey string, clusterUUID string) BarometerApi {
 	return BarometerApi{
 		barometerApiKey: apiKey,
-		clusterUUID: clusterUUID,
+		clusterUUID:     clusterUUID,
 		HTTPClient: &http.Client{
 			Timeout: 5 * time.Second,
 		},
@@ -49,7 +53,7 @@ func (b BarometerApi) GetApiKey() string {
 func (b BarometerApi) makeGetRequest(path string) ([]byte, error) {
 	var request *http.Request
 
-	request, err := http.NewRequest("GET", fmt.Sprint(BAROMETER_API_URL, path), nil)
+	request, err := http.NewRequest("GET", fmt.Sprint(BAROMETER_API_BASE, path), nil)
 	if err != nil {
 		return []byte{}, err
 	}
@@ -76,8 +80,9 @@ func (b BarometerApi) makePostRequest(payload interface{}) (statusCode int, err 
 		return
 	}
 
-    var request *http.Request
-	if request, err = http.NewRequest("POST", BAROMETER_API_URL, bytes.NewBuffer(jsonData)); err != nil {
+	var request *http.Request
+	urlPath := fmt.Sprint(BAROMETER_API_BASE, BAROMETER_API_EVENTS_PATH)
+	if request, err = http.NewRequest("POST", urlPath, bytes.NewBuffer(jsonData)); err != nil {
 		return
 	}
 	request.Header.Set("Content-Type", "application/json")
@@ -97,4 +102,3 @@ func (b BarometerApi) makePostRequest(payload interface{}) (statusCode int, err 
 	statusCode = resp.StatusCode
 	return
 }
-

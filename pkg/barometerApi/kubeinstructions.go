@@ -7,7 +7,6 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-
 const KUBERNETES_INSTRUCTION_PATH = "/api/barometer/v1/kubectl_instructions"
 
 type KubeKind string
@@ -23,8 +22,8 @@ func NewK8sApiResultsEvent(d BarometerK8sApiResultsEventData) BarometerEvent {
 		panic(err)
 	}
 	return BarometerEvent{
-		EventKey: K8sApiResults,
-		Event: outputMap,
+		EventType: K8sApiResults,
+		Event:     outputMap,
 	}
 }
 

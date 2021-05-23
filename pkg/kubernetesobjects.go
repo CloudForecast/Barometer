@@ -104,14 +104,12 @@ func fetchAndRunKubeInstructions(b barometerApi.ApiClient) (*barometerApi.Barome
 	outMap := make(map[string][]interface{})
 	for key, elem := range result {
 		for _, i := range elem {
-			var obj interface{}
-			// TODO: find way to turn info or runtime.Object into the actual object data
+			var obj map[string]interface{}
 			err := mapstructure.Decode(i.Object, &obj)
-			i.Object.GetObjectKind()
 			if err != nil {
 				panic(err)
 			}
-			outMap[key] = append(outMap[key], obj)
+			outMap[key] = append(outMap[key], obj["Object"])
 		}
 	}
 

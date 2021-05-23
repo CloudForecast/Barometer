@@ -15,9 +15,9 @@ import (
 var dryRun bool
 
 var agentCmd = &cobra.Command{
-	Use: "agent",
+	Use:   "agent",
 	Short: "run the Cloudforecast barometer agent",
-	RunE: run,
+	RunE:  run,
 }
 
 func run(cmd *cobra.Command, args []string) error {
@@ -47,6 +47,9 @@ func run(cmd *cobra.Command, args []string) error {
 
 func init() {
 	agentCmd.Flags().BoolVar(&dryRun, "dryrun", false, "Dry run, do not actually send POST requests")
+	agentCmd.Flags().String("prometheus-url", "", "Prometheus service address")
 	_ = viper.BindPFlag("dryrun", agentCmd.Flags().Lookup("dryrun"))
+	_ = viper.BindEnv("prometheusUrl", "CLOUDFORECAST_PROMETHEUS_HTTP_API_URL")
+	_ = viper.BindPFlag("prometheusUrl", agentCmd.Flags().Lookup("prometheus-url"))
 	RootCmd.AddCommand(agentCmd)
 }

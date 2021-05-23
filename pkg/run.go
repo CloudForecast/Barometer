@@ -17,10 +17,19 @@ func RunAll(client barometerApi.ApiClient) (func(), error) {
 	// Everything else
 	s := gocron.NewScheduler(time.UTC)
 	_, err = s.Every(5).Minutes().SingletonMode().Do(func() {
-		err := FetchAndSubmitKubernetesObjects(client)
-		if err != nil {
-			log.Error().Err(err).Msg("")
-		}
+		go func() {
+			err := FetchAndSubmitKubernetesObjects(client)
+			if err != nil {
+				log.Error().Err(err).Msg("")
+			}
+		}()
+
+		go func() {
+			err = FetchAndSubmitPrometheusData(client)
+			if err != nil {
+				log.Error().Err(err).Msg("")
+			}
+		}()
 	})
 	s.StartAsync()
 

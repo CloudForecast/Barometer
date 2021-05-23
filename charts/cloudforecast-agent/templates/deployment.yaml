@@ -31,7 +31,11 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image }}"
           imagePullPolicy: {{ .Values.imagePullPolicy }}
-          args: [agent, --loglevel, debug]
+          args:
+          - agent
+          - "--loglevel"
+          - debug
+          {{ if .Values.barometerAgent.additionalArgs }}{{ toYaml .Values.barometerAgent.additionalArgs | nindent 10 }}{{ end }}
           env:
             {{ if .Values.barometerAgent.apiKey }}
             - name: CLOUDFORECAST_BAROMETER_API_KEY
@@ -44,7 +48,7 @@ spec:
                   name: {{ .Values.barometerAgent.apiKeySecret.secretName | quote }}
                   key: {{ .Values.barometerAgent.apiKeySecret.key | quote }}
                   optional: false
-            {{ end}}
+            {{ end }}
           envFrom:
             - configMapRef:
                 name: {{ include "cloudforecast-agent.fullname" . }}-config
