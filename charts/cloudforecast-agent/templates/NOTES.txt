@@ -5,3 +5,4 @@ CloudForecast dashboard to start seeing your metrics appear.
 
 
 Your specified Cluster UUID is: {{ .Values.barometerAgent.clusterUuid }}
+You've installed Barometer version: {{ .Chart.AppVersion }}
