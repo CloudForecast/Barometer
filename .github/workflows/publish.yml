@@ -17,6 +17,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
+      # Get the version tag from Chart.yaml's appVersion tag
+      - name: Get appVersion
+        id: get_appversion
+        uses: CumulusDS/get-yaml-paths-action@v0.1.0
+        with:
+          file: charts/cloudforecast-agent/Chart.yaml
+          appVersion: appVersion
+
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v3
@@ -26,10 +35,11 @@ jobs:
           tags: |
             type=ref,event=branch
             type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
+            type=semver,pattern={{version}},value=${{ steps.get_appversion.outputs.appVersion }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ steps.get_appversion.outputs.appVersion }}
+            type=semver,pattern={{major}},value=${{ steps.get_appversion.outputs.appVersion }}
             type=sha
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
