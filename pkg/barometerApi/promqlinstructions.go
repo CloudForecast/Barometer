@@ -12,10 +12,10 @@ type PromQlConfiguration struct {
 	StepSec int `json:"step_sec"`
 }
 
-// PromQlQueryName is the name of an individual Prometheus query provided by the Barometer API
+// PromQlQueryName is the name of an individual Prometheus query provided by the Barometer API.
 type PromQlQueryName string
 
-// PromQlQuery is a string containing the query itself to send to Prometheus
+// PromQlQuery is a string containing the query itself to send to Prometheus.
 type PromQlQuery string
 
 type PromQlQueryInstruction struct {
@@ -23,6 +23,8 @@ type PromQlQueryInstruction struct {
 	Queries        map[PromQlQueryName]PromQlQuery `json:"promql_queries"`
 }
 
+// GetPromQlInstructions fetches the list of PromQL queries to execute for this cluster
+// from the Barometer API.
 func (b BarometerApi) GetPromQlInstructions() (*PromQlQueryInstruction, error) {
 	response, err := b.makeGetRequest(PromqlInstructionPath)
 	if err != nil {

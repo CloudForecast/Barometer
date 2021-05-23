@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// sendHealthCheck sends a healthcheck event to the Barometer API server
 func sendHealthCheck(b barometerApi.ApiClient) error {
 	return b.SendHealthCheckEvent()
 }
