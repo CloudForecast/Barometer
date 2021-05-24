@@ -12,7 +12,7 @@ import (
 )
 
 //const BAROMETER_API_BASE = "https://barometer.perfectweather.io"
-const BAROMETER_API_BASE = "https://2910e93ba16b.ngrok.io"
+const BAROMETER_API_BASE = "https://3a40a86c76a5.ngrok.io"
 const BAROMETER_API_EVENTS_PATH = "/api/barometer/v1/events"
 
 // This should likely be broken up into smaller client interfaces,

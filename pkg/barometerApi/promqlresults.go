@@ -2,6 +2,7 @@ package barometerApi
 
 import (
 	"fmt"
+	"github.com/mitchellh/mapstructure"
 	"github.com/rs/zerolog/log"
 )
 
@@ -9,7 +10,7 @@ import (
 // As we may receive instructions to query the same metric over varying time periods in the same
 // instruction set, and each would share a query ID like `cpu_requested`, but each API call to Barometer
 // can only have the query_id once, we are only able to send a single PromQlResult at a time.
-func NewPromQlResultsEvent(instructions PromQlQueryInstruction, results []PromQLResult) *BarometerPromQlResultsEventData {
+func NewPromQlResultsEvent(instructions PromQlQueryInstruction, results []PromQLResult) *BarometerEvent {
 	// Sometimes we end up with an empty result at the end, so we need to filter it out
 	// before sending it to the API.
 	var filteredResults []PromQLResult
@@ -18,9 +19,19 @@ func NewPromQlResultsEvent(instructions PromQlQueryInstruction, results []PromQL
 			filteredResults = append(filteredResults, result)
 		}
 	}
-	return &BarometerPromQlResultsEventData{
+
+	var outputMap map[string]interface{}
+	err := mapstructure.Decode(BarometerPromQlResultsEventData{
 		PromQLInstructions: instructions,
 		PromQlResults: filteredResults,
+	}, &outputMap)
+	if err != nil {
+		panic(err)
+	}
+
+	return &BarometerEvent{
+		EventType: PromQlResults,
+		Event: outputMap,
 	}
 }
 

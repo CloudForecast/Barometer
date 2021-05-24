@@ -19,8 +19,8 @@ type PromQlQueryName string
 type PromQlQuery string
 
 type PromQlQueryInstruction struct {
-	Configurations []PromQlConfiguration           `json:"promql_configurations"`
-	Queries        map[PromQlQueryName]PromQlQuery `json:"promql_queries"`
+	Configurations []PromQlConfiguration           `json:"promql_configurations" mapstructure:"promql_configurations"`
+	Queries        map[PromQlQueryName]PromQlQuery `json:"promql_queries" mapstructure:"promql_queries"`
 }
 
 // GetPromQlInstructions fetches the list of PromQL queries to execute for this cluster
