@@ -32,7 +32,7 @@ func NewPrometheusAPIClient() v1.API {
 
 func ExecutePromQLQuery(v1api v1.API, query string, start time.Time, end time.Time, duration time.Duration) (model.Value, error) {
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
 	result, warnings, err := v1api.QueryRange(ctx, query, v1.Range{
 		Start: start,
@@ -92,23 +92,25 @@ func FetchAndSubmitPrometheusData(b barometerApi.ApiClient) error {
 	var errorList []error
 	go followPromQlInstructions(instructions, resultsChan, &errorList)
 
+	var results []barometerApi.PromQLResult
+
 	for {
 		result, more := <-resultsChan
+		results = append(results, result)
 		if !more {
 			break
 		}
-		go func() {
-			err := b.SendPromQlResultsEvent(result)
-			if err != nil {
-				log.Error().Err(err).Msg("Error sending promql results event")
-				_ = b.SendExceptionEvent(err)
-			}
-		}()
 	}
 
 	for _, err = range errorList {
 		log.Error().Err(err).Msg("error following PromQl instructions")
 		go b.SendExceptionEvent(err)
+	}
+
+	err = b.SendPromQlResultsEvent(*instructions, results)
+	if err != nil {
+		log.Error().Err(err).Msg("Error sending promql results event")
+		_ = b.SendExceptionEvent(err)
 	}
 
 	return nil

@@ -32,7 +32,8 @@ type BarometerK8sApiResultsEventData struct {
 }
 
 type BarometerPromQlResultsEventData struct {
-	PromQlResults map[string]PromQLResult `json:"promql_results" mapstructure:"promql_results"`
+	PromQLInstructions PromQlQueryInstruction `json:"promql_instructions" mapstructure:"promql_instructions"`
+	PromQlResults []PromQLResult `json:"promql_results" mapstructure:"promql_results"`
 }
 
 type PromQLResult struct {

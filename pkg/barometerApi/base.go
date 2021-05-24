@@ -11,7 +11,8 @@ import (
 	"time"
 )
 
-const BAROMETER_API_BASE = "https://barometer.perfectweather.io"
+//const BAROMETER_API_BASE = "https://barometer.perfectweather.io"
+const BAROMETER_API_BASE = "https://2910e93ba16b.ngrok.io"
 const BAROMETER_API_EVENTS_PATH = "/api/barometer/v1/events"
 
 // This should likely be broken up into smaller client interfaces,
@@ -26,7 +27,7 @@ type ApiClient interface {
 
 	SendHealthCheckEvent() error
 	SendK8sAPIResultsEvent(BarometerK8sApiResultsEventData) error
-	SendPromQlResultsEvent(PromQLResult) error
+	SendPromQlResultsEvent(PromQlQueryInstruction, []PromQLResult) error
 	SendExceptionEvent(inputError error) error
 }
 
