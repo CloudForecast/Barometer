@@ -46,6 +46,7 @@ func init() {
 	RootCmd.PersistentFlags().String("api-key", "", "Cloudforecast Barometer API key")
 	RootCmd.PersistentFlags().String("cluster-uuid", "", "Cloudforecast-provided UUID for the Kubernetes cluster")
 	RootCmd.PersistentFlags().String("kubeconfig", "", "Path to kubeconfig file")
+	RootCmd.PersistentFlags().String("api-host", "", "Barometer API host")
 }
 
 func initializeConfig(cmd *cobra.Command, args []string) error {
@@ -57,6 +58,8 @@ func initializeConfig(cmd *cobra.Command, args []string) error {
 	_ = viper.BindPFlag("clusterUUID", cmd.Flags().Lookup("cluster-uuid"))
 	_ = viper.BindEnv("clusterUUID", "CLOUDFORECAST_BAROMETER_CLUSTER_UUID")
 	_ = viper.BindPFlag("kubeconfig", cmd.Flags().Lookup("kubeconfig"))
+	_ = viper.BindEnv("apiHost", "CLOUDFORECAST_BAROMETER_API_ENDPOINT")
+	_ = viper.BindPFlag("apiHost", cmd.Flags().Lookup("api-host"))
 
 	return nil
 }

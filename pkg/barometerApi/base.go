@@ -11,8 +11,6 @@ import (
 	"time"
 )
 
-//const BAROMETER_API_BASE = "https://barometer.perfectweather.io"
-const BAROMETER_API_BASE = "https://3a40a86c76a5.ngrok.io"
 const BAROMETER_API_EVENTS_PATH = "/api/barometer/v1/events"
 
 // This should likely be broken up into smaller client interfaces,
@@ -35,15 +33,18 @@ type BarometerApi struct {
 	barometerApiKey string
 	clusterUUID     string
 	HTTPClient      *http.Client
+	ApiHost 		string
 }
 
 func NewBarometerApi(apiKey string, clusterUUID string) BarometerApi {
+	apiHost := viper.GetString("apiHost")
 	return BarometerApi{
 		barometerApiKey: apiKey,
 		clusterUUID:     clusterUUID,
 		HTTPClient: &http.Client{
 			Timeout: 5 * time.Second,
 		},
+		ApiHost: apiHost,
 	}
 }
 
@@ -54,7 +55,7 @@ func (b BarometerApi) GetApiKey() string {
 func (b BarometerApi) makeGetRequest(path string) ([]byte, error) {
 	var request *http.Request
 
-	request, err := http.NewRequest("GET", fmt.Sprint(BAROMETER_API_BASE, path), nil)
+	request, err := http.NewRequest("GET", fmt.Sprint(b.ApiHost, path), nil)
 	if err != nil {
 		return []byte{}, err
 	}
@@ -82,7 +83,7 @@ func (b BarometerApi) makePostRequest(payload interface{}) (statusCode int, err 
 	}
 
 	var request *http.Request
-	urlPath := fmt.Sprint(BAROMETER_API_BASE, BAROMETER_API_EVENTS_PATH)
+	urlPath := fmt.Sprint(b.ApiHost, BAROMETER_API_EVENTS_PATH)
 	if request, err = http.NewRequest("POST", urlPath, bytes.NewBuffer(jsonData)); err != nil {
 		return
 	}

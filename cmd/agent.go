@@ -48,8 +48,11 @@ func run(cmd *cobra.Command, args []string) error {
 func init() {
 	agentCmd.Flags().BoolVar(&dryRun, "dryrun", false, "Dry run, do not actually send POST requests")
 	agentCmd.Flags().String("prometheus-url", "", "Prometheus service address")
+	agentCmd.Flags().String("schedule", "*/5 * * * *", "Cron schedule for fetching and sending metrics")
 	_ = viper.BindPFlag("dryrun", agentCmd.Flags().Lookup("dryrun"))
 	_ = viper.BindEnv("prometheusUrl", "CLOUDFORECAST_PROMETHEUS_HTTP_API_URL")
 	_ = viper.BindPFlag("prometheusUrl", agentCmd.Flags().Lookup("prometheus-url"))
+	_ = viper.BindEnv("schedule", "CLOUDFORECAST_BAROMETER_CRON_SCHEDULE")
+	_ = viper.BindPFlag("schedule", agentCmd.Flags().Lookup("schedule"))
 	RootCmd.AddCommand(agentCmd)
 }

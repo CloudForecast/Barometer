@@ -13,6 +13,9 @@ barometerAgent:
     secretName: ''
     key: ''
 
+  # The API endpoint of the Barometer API for the cluster agent to hit
+  apiEndpoint: 'https://barometer.perfectweather.io'
+
   # UUID of the monitored Kubernetes cluster, provided by Cloudforecast. Required.
   clusterUuid: ''
 
@@ -20,6 +23,9 @@ barometerAgent:
   # Leave blank if using the Prometheus instance installed with the chart.
   # If using an already-existing Prometheus instance, must be provided.
   prometheusUrlOverride: ''
+
+  # The schedule, cron-style, on which
+  cronSchedule: "*/5 * * * *"
 
   # Any additional CLI arguments to supply to the Cloudforecast agent
   additionalArgs: []

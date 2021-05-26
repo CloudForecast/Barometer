@@ -4,6 +4,7 @@ import (
 	"github.com/CloudForecast/Barometer/pkg/barometerApi"
 	"github.com/go-co-op/gocron"
 	"github.com/rs/zerolog/log"
+	"github.com/spf13/viper"
 	"time"
 )
 
@@ -16,7 +17,9 @@ func RunAll(client barometerApi.ApiClient) (func(), error) {
 
 	// Everything else
 	s := gocron.NewScheduler(time.UTC)
-	_, err = s.Every(5).Minutes().SingletonMode().Do(func() {
+	cronSchedule := viper.GetString("schedule")
+
+	_, err = s.Cron(cronSchedule).SingletonMode().Do(func() {
 		go func() {
 			err := FetchAndSubmitKubernetesObjects(client)
 			if err != nil {
