@@ -14,7 +14,7 @@ barometerAgent:
     key: ''
 
   # The API endpoint of the Barometer API for the cluster agent to hit
-  apiEndpoint: 'https://barometer.perfectweather.io'
+  apiEndpoint: 'https://barometer.cloudforecast.io'
 
   # UUID of the monitored Kubernetes cluster, provided by Cloudforecast. Required.
   clusterUuid: ''
@@ -29,6 +29,8 @@ barometerAgent:
 
   # Any additional CLI arguments to supply to the Cloudforecast agent
   additionalArgs: []
+
+  logLevel: "info"
 
 imagePullPolicy: IfNotPresent
 repository: ghcr.io/CloudForecast/Barometer
@@ -95,10 +97,12 @@ prometheus:
   # kube-state-metrics is installed via the Prometheus chart.
   kubeStateMetrics:
     enabled: true
+    version: "3.3.*"
 
   # node-exporter is installed via the Prometheus chart.
   nodeExporter:
     enabled: true
+    version: "1.18.*"
 
   alertmanager:
     enabled: false
