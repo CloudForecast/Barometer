@@ -59,8 +59,8 @@ func (b BarometerApi) makeGetRequest(path string) ([]byte, error) {
 	if err != nil {
 		return []byte{}, err
 	}
-	request.Header.Set("BM-API-Key", b.barometerApiKey)
-	request.Header.Set("BM-Cluster-UUID", b.clusterUUID)
+	request.Header.Set("bm-api-key", b.barometerApiKey)
+	request.Header.Set("bm-cluster-uuid", b.clusterUUID)
 	resp, err := b.HTTPClient.Do(request)
 	if err != nil {
 		return []byte{}, err
@@ -75,9 +75,9 @@ func (b BarometerApi) makeGetRequest(path string) ([]byte, error) {
 }
 
 func (b BarometerApi) makePostRequest(payload interface{}) (statusCode int, err error) {
-	log.Debug().Msgf("before converting payload to JSON: %v", payload)
+	log.Trace().Msgf("before converting payload to JSON: %v", payload)
 	jsonData, err := json.Marshal(payload)
-	log.Debug().Msgf("POSTing this JSON: %s", jsonData)
+	log.Trace().Msgf("POSTing this JSON: %s", jsonData)
 	if err != nil {
 		return
 	}
@@ -88,8 +88,8 @@ func (b BarometerApi) makePostRequest(payload interface{}) (statusCode int, err 
 		return
 	}
 	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("BM-API-Key", b.barometerApiKey)
-	request.Header.Set("BM-Cluster-UUID", b.clusterUUID)
+	request.Header.Set("bm-api-key", b.barometerApiKey)
+	request.Header.Set("bm-cluster-uuid", b.clusterUUID)
 
 	dryRun := viper.GetBool("dryrun")
 	if dryRun {
@@ -102,5 +102,6 @@ func (b BarometerApi) makePostRequest(payload interface{}) (statusCode int, err 
 	}
 
 	statusCode = resp.StatusCode
+	log.Debug().Msgf("POST request result: %s", statusCode)
 	return
 }

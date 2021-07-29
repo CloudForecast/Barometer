@@ -11,6 +11,7 @@ const (
 
 type BarometerEvent struct {
 	EventType BarometerEventType     `json:"event_type"`
+	EventTs   int64 `json:"event_ts"`
 	Event     map[string]interface{} `json:"event_data"`
 }
 
