@@ -12,8 +12,12 @@ func sendHealthCheck(b barometerApi.ApiClient) error {
 }
 
 func BeginHealthChecks(b barometerApi.ApiClient) (func(), error) {
+	// Run first Health check
+	_ = sendHealthCheck(b)
+
+	// Setup cron job every 15 minutes
 	s := gocron.NewScheduler(time.UTC)
-	_, err := s.Every(1).Minutes().SingletonMode().Do(func() {
+	_, err := s.Every(15).Minutes().SingletonMode().Do(func() {
 		_ = sendHealthCheck(b)
 	})
 	if err != nil {
