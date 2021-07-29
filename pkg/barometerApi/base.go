@@ -102,6 +102,6 @@ func (b BarometerApi) makePostRequest(payload interface{}) (statusCode int, err 
 	}
 
 	statusCode = resp.StatusCode
-	log.Debug().Msgf("POST request result: %s", statusCode)
+	log.Debug().Msgf("POST request result: %v", statusCode)
 	return
 }
