@@ -10,7 +10,7 @@ data:
   CLOUDFORECAST_PROMETHEUS_HTTP_API_URL: '{{ .Values.barometerAgent.prometheusUrlOverride }}'
   {{ else if .Values.prometheus.enabled }}
   {{/* Issues with  */}}
-  CLOUDFORECAST_PROMETHEUS_HTTP_API_URL: 'http://barometer-prometheus-server.{{ .Release.Namespace }}.svc.cluster.local'
+  CLOUDFORECAST_PROMETHEUS_HTTP_API_URL: 'http://{{ .Release.Name }}-prometheus-server.{{ .Release.Namespace }}.svc.cluster.local'
   {{ else }}
     {{- fail "if not using the chart-native Prometheus, a Prometheus URL must be provided" -}}
   {{ end }}
