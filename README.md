@@ -13,7 +13,7 @@ To install the agent, use the Helm chart.
 
 First, add the repository:
 
-    helm repo add cloudforecast-barometer https://cloudforecast.github.io/Barometer
+    helm repo add cloudforecast-barometer https://cloudforecast.github.io/barometer
 
 Then, install the chart:
 

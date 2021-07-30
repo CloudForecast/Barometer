@@ -3,7 +3,7 @@ package pkg
 import (
 	"context"
 	"fmt"
-	"github.com/CloudForecast/Barometer/pkg/barometerApi"
+	"github.com/CloudForecast/barometer/pkg/barometerApi"
 	"github.com/mitchellh/mapstructure"
 	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/api"
