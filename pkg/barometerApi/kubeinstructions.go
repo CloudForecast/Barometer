@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/mitchellh/mapstructure"
 	"github.com/rs/zerolog/log"
+	"time"
 )
 
 const KUBERNETES_INSTRUCTION_PATH = "/api/barometer/v1/kubectl_instructions"
@@ -23,6 +24,7 @@ func NewK8sApiResultsEvent(d BarometerK8sApiResultsEventData) BarometerEvent {
 	}
 	return BarometerEvent{
 		EventType: K8sApiResults,
+		EventTs:   time.Now().Unix(),
 		Event:     outputMap,
 	}
 }

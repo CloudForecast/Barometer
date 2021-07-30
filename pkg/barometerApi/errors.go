@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/mitchellh/mapstructure"
 	"github.com/rs/zerolog/log"
+	"time"
 )
 
 func NewExceptionEvent(err error) BarometerEvent {
@@ -16,6 +17,7 @@ func NewExceptionEvent(err error) BarometerEvent {
 
 	return BarometerEvent{
 		EventType: Exception,
+		EventTs:   time.Now().Unix(),
 		Event:     outputData,
 	}
 }

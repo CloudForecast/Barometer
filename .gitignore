@@ -23,3 +23,6 @@ scope.md
 skaffold.yaml
 kind.yaml
 __debug_bin
+
+.DS_Store
+*/.DS_Store
