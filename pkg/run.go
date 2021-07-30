@@ -1,7 +1,7 @@
 package pkg
 
 import (
-	"github.com/CloudForecast/Barometer/pkg/barometerApi"
+	"github.com/CloudForecast/barometer/pkg/barometerApi"
 	"github.com/go-co-op/gocron"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"

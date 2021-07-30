@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/CloudForecast/Barometer/cmd"
+	"github.com/CloudForecast/barometer/cmd"
 )
 
 func main() {
