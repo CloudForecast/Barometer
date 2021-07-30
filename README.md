@@ -21,7 +21,7 @@ Then, install the chart:
         --set barometerAgent.apiKey=<provided api key> \
         --set barometerAgent.clusterUuid=<provided uuid>
 
-To see what configuration options are available, see [`values.yaml`](charts/cloudforecast-agent/values.yaml). As part of the configuratio option, you can skip the Prometheus, `kube-state-metrics`, and `node-exporter` if you already have them installed.
+To see what configuration options are available, see [`values.yaml`](charts/cloudforecast-agent/values.yaml). As part of the configuration options, you can skip the Prometheus, `kube-state-metrics`, and `node-exporter` install if you already have them installed.
 
 ## Contributing
 
