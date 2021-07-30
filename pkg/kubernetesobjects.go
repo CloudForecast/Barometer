@@ -2,7 +2,7 @@ package pkg
 
 import (
 	"fmt"
-	"github.com/CloudForecast/Barometer/pkg/barometerApi"
+	"github.com/CloudForecast/barometer/pkg/barometerApi"
 	"github.com/mitchellh/mapstructure"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"

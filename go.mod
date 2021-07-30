@@ -1,4 +1,4 @@
-module github.com/CloudForecast/Barometer
+module github.com/CloudForecast/barometer
 
 go 1.15
 

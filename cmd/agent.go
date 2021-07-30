@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"errors"
-	"github.com/CloudForecast/Barometer/pkg"
-	"github.com/CloudForecast/Barometer/pkg/barometerApi"
+	"github.com/CloudForecast/barometer/pkg"
+	"github.com/CloudForecast/barometer/pkg/barometerApi"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
