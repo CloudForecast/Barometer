@@ -28,7 +28,7 @@ jobs:
         uses: docker/metadata-action@v3
         with:
           images: |
-            ghcr.io/CloudForecast/barometer
+            ghcr.io/cloudforecast/barometer
           tags: |
             type=ref,event=branch
             type=ref,event=pr

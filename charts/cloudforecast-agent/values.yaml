@@ -33,7 +33,7 @@ barometerAgent:
   logLevel: "info"
 
 imagePullPolicy: IfNotPresent
-repository: ghcr.io/CloudForecast/barometer
+repository: ghcr.io/cloudforecast/barometer
 imageTag: ''
 
 imagePullSecrets: []
