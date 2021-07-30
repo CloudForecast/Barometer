@@ -113,7 +113,7 @@ func fetchAndRunKubeInstructions(b barometerApi.ApiClient) (*barometerApi.Barome
 		}
 	}
 
-	log.Debug().Msgf("outMap: %v", outMap)
+	log.Trace().Msgf("outMap: %v", outMap)
 
 	eventData := barometerApi.BarometerK8sApiResultsEventData{
 		K8sClusterInformation: outMap,

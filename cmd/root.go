@@ -17,6 +17,8 @@ var RootCmd = &cobra.Command{
 
 func convertLogLevelToZerolog(input string) zerolog.Level {
 	switch input {
+	case "trace":
+		return zerolog.TraceLevel
 	case "debug":
 		return zerolog.DebugLevel
 	case "info":
@@ -51,8 +53,8 @@ func init() {
 
 func initializeConfig(cmd *cobra.Command, args []string) error {
 	_ = viper.BindPFlag("loglevel", cmd.Flags().Lookup("loglevel"))
+	_ = viper.BindEnv("loglevel", "CLOUDFORECAST_BAROMETER_LOG_LEVEL")
 	zerolog.SetGlobalLevel(convertLogLevelToZerolog(viper.GetString("loglevel")))
-
 	_ = viper.BindPFlag("apiKey", cmd.Flags().Lookup("api-key"))
 	_ = viper.BindEnv("apiKey", "CLOUDFORECAST_BAROMETER_API_KEY")
 	_ = viper.BindPFlag("clusterUUID", cmd.Flags().Lookup("cluster-uuid"))

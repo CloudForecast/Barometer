@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/mitchellh/mapstructure"
 	"github.com/rs/zerolog/log"
+	"time"
 )
 
 // NewPromQlResultsEvent creates a new event for a single PromQLResult to send to the Barometer API.
@@ -31,6 +32,7 @@ func NewPromQlResultsEvent(instructions PromQlQueryInstruction, results []PromQL
 
 	return &BarometerEvent{
 		EventType: PromQlResults,
+		EventTs:   time.Now().Unix(),
 		Event: outputMap,
 	}
 }

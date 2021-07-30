@@ -46,7 +46,8 @@ func ExecutePromQLQuery(v1api v1.API, query string, start time.Time, end time.Ti
 	if len(warnings) > 0 {
 		log.Warn().Msgf("warnings: %v\n", warnings)
 	}
-	log.Debug().Msgf("ran query '%s', query result: %v", query, result)
+	log.Debug().Msgf("ran query '%s'", query)
+	log.Trace().Msgf("ran query '%s', query result: %v", query, result)
 
 	return result, nil
 }
@@ -67,7 +68,7 @@ func followPromQlInstructions(instruction *barometerApi.PromQlQueryInstruction, 
 			var convertedResults []interface{}
 			mapstructure.Decode(results, &convertedResults)
 			if results != nil {
-				log.Debug().Msgf("returned result: %v", results)
+				log.Trace().Msgf("returned result: %v", results)
 				resultsChan <- barometerApi.PromQLResult{
 					QueryId:             string(queryName),
 					Query:               string(query),

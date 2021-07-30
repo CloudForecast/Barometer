@@ -3,11 +3,13 @@ package barometerApi
 import (
 	"fmt"
 	"github.com/rs/zerolog/log"
+	"time"
 )
 
 func NewHealthCheckEvent() BarometerEvent {
 	return BarometerEvent{
 		EventType: HealthCheck,
+		EventTs:   time.Now().Unix(),
 		Event:     make(map[string]interface{}),
 	}
 }
