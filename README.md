@@ -17,11 +17,19 @@ First, add the repository:
 
 Then, install the chart:
 
-    helm upgrade --install RELEASE_NAME cloudforecast-barometer/cloudforecast-agent \
-        --set barometerAgent.apiKey=<provided api key> \
-        --set barometerAgent.clusterUuid=<provided uuid>
+    helm upgrade --install cloudforecast-barometer cloudforecast-barometer/cloudforecast-agent \
+        --set barometerAgent.clusterUuid=<provided uuid> \
+        --set barometerAgent.apiKey=<provided api key>
 
-To see what configuration options are available, see [`values.yaml`](charts/cloudforecast-agent/values.yaml). As part of the configuration options, you can skip the Prometheus, `kube-state-metrics`, and `node-exporter` install if you already have them installed.
+If you already have a monitoring stack running (Prometheus, `kube-state-metrics`, and `node-exporter`), you can just point our agent to your prometheus endpoint (e.g: _http://prometheus-server.default.svc.cluster.local_):  
+
+    helm upgrade --install cloudforecast-barometer cloudforecast-barometer/cloudforecast-agent \
+        --set barometerAgent.clusterUuid=<provided uuid> \
+        --set barometerAgent.apiKey=<provided api key> \
+        --set barometerAgent.prometheusUrlOverride=<prometheus endpoint> \
+        --set prometheus.enabled=false
+
+To see what configuration options are available, see [`values.yaml`](charts/cloudforecast-agent/values.yaml).
 
 ## Contributing
 
