@@ -52,9 +52,8 @@ func ExecutePromQLQuery(v1api v1.API, query string, start time.Time, end time.Ti
 	return result, nil
 }
 
-func followPromQlInstructions(instruction *barometerApi.PromQlQueryInstruction, resultsChan chan<- barometerApi.PromQLResult, errorList *[]error) {
+func followPromQlInstructions(instruction *barometerApi.PromQlQueryInstruction, resultsChan chan<- barometerApi.PromQLResult, errorsChan chan<- error) {
 	promClient := NewPrometheusAPIClient()
-	var localErrorList []error
 
 	// If needed, this could be parallelized later. For now, a simple loop should suffice.
 	for _, config := range instruction.Configurations {
@@ -62,7 +61,7 @@ func followPromQlInstructions(instruction *barometerApi.PromQlQueryInstruction, 
 			results, err := ExecutePromQLQuery(promClient, string(query), time.Unix(int64(config.StartTs), 0), time.Unix(int64(config.EndTs), 0), time.Duration(config.StepSec)*time.Second)
 			if err != nil {
 				log.Error().Err(err).Msg("")
-				localErrorList = append(localErrorList, err)
+				errorsChan <- err
 				continue
 			}
 			var convertedResults []interface{}
@@ -78,9 +77,8 @@ func followPromQlInstructions(instruction *barometerApi.PromQlQueryInstruction, 
 			}
 		}
 	}
-
 	close(resultsChan)
-	errorList = &localErrorList
+	close(errorsChan)
 }
 
 func FetchAndSubmitPrometheusData(b barometerApi.ApiClient) error {
@@ -90,16 +88,26 @@ func FetchAndSubmitPrometheusData(b barometerApi.ApiClient) error {
 	}
 
 	resultsChan := make(chan barometerApi.PromQLResult)
+	errorsChan := make(chan error)
 	var errorList []error
-	go followPromQlInstructions(instructions, resultsChan, &errorList)
-
+	go followPromQlInstructions(instructions, resultsChan, errorsChan)
 	var results []barometerApi.PromQLResult
 
-	for {
-		result, more := <-resultsChan
-		results = append(results, result)
-		if !more {
-			break
+	for resultsChan != nil || errorsChan != nil {
+		select {
+		case result, ok := <-resultsChan:
+			if !ok {
+				resultsChan = nil
+			} else {
+				results = append(results, result)
+			}
+
+		case err, ok := <-errorsChan:
+			if !ok {
+				errorsChan = nil
+			} else {
+				errorList = append(errorList, err)
+			}
 		}
 	}
 
