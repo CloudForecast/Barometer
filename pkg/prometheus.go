@@ -52,11 +52,13 @@ func ExecutePromQLQuery(v1api v1.API, query string, start time.Time, end time.Ti
 	return result, nil
 }
 
-func followPromQlInstructions(instruction *barometerApi.PromQlQueryInstruction, resultsChan chan<- barometerApi.PromQLResult, errorsChan chan<- error) {
+func followPromQlInstructions(instruction *barometerApi.PromQlQueryInstruction, resultsChan chan<- []barometerApi.PromQLResult, errorsChan chan<- error) {
 	promClient := NewPrometheusAPIClient()
 
 	// If needed, this could be parallelized later. For now, a simple loop should suffice.
 	for _, config := range instruction.Configurations {
+		var configurationResults []barometerApi.PromQLResult
+
 		for queryName, query := range instruction.Queries {
 			results, err := ExecutePromQLQuery(promClient, string(query), time.Unix(int64(config.StartTs), 0), time.Unix(int64(config.EndTs), 0), time.Duration(config.StepSec)*time.Second)
 			if err != nil {
@@ -68,14 +70,16 @@ func followPromQlInstructions(instruction *barometerApi.PromQlQueryInstruction, 
 			mapstructure.Decode(results, &convertedResults)
 			if results != nil {
 				log.Trace().Msgf("returned result: %v", results)
-				resultsChan <- barometerApi.PromQLResult{
+				var result = barometerApi.PromQLResult{
 					QueryId:             string(queryName),
 					Query:               string(query),
 					PromQlConfiguration: config,
 					Result:              convertedResults,
 				}
+				configurationResults = append(configurationResults, result)
 			}
 		}
+		resultsChan <- configurationResults
 	}
 	close(resultsChan)
 	close(errorsChan)
@@ -87,19 +91,22 @@ func FetchAndSubmitPrometheusData(b barometerApi.ApiClient) error {
 		return errors.Wrap(err, "issue getting promql instructions")
 	}
 
-	resultsChan := make(chan barometerApi.PromQLResult)
+	resultsChan := make(chan []barometerApi.PromQLResult)
 	errorsChan := make(chan error)
 	var errorList []error
 	go followPromQlInstructions(instructions, resultsChan, errorsChan)
-	var results []barometerApi.PromQLResult
 
 	for resultsChan != nil || errorsChan != nil {
 		select {
-		case result, ok := <-resultsChan:
+		case results, ok := <-resultsChan:
 			if !ok {
 				resultsChan = nil
 			} else {
-				results = append(results, result)
+				err = b.SendPromQlResultsEvent(*instructions, results)
+				if err != nil {
+					log.Error().Err(err).Msg("Error sending promql results event")
+					errorList = append(errorList, err)
+				}
 			}
 
 		case err, ok := <-errorsChan:
@@ -114,12 +121,6 @@ func FetchAndSubmitPrometheusData(b barometerApi.ApiClient) error {
 	for _, err = range errorList {
 		log.Error().Err(err).Msg("error following PromQl instructions")
 		go b.SendExceptionEvent(err)
-	}
-
-	err = b.SendPromQlResultsEvent(*instructions, results)
-	if err != nil {
-		log.Error().Err(err).Msg("Error sending promql results event")
-		_ = b.SendExceptionEvent(err)
 	}
 
 	return nil
