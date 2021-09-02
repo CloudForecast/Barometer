@@ -19,8 +19,6 @@ func NewHealthCheckEvent() BarometerEvent {
 
 func (b BarometerApi) SendHealthCheckEvent() error {
 	log.Debug().Msg("Sending health check...")
-
-
 	event := NewHealthCheckEvent()
 	statusCode, err := b.makePostRequest(event)
 	if err != nil {
