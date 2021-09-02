@@ -62,6 +62,7 @@ func initializeConfig(cmd *cobra.Command, args []string) error {
 	_ = viper.BindPFlag("kubeconfig", cmd.Flags().Lookup("kubeconfig"))
 	_ = viper.BindEnv("apiHost", "CLOUDFORECAST_BAROMETER_API_ENDPOINT")
 	_ = viper.BindPFlag("apiHost", cmd.Flags().Lookup("api-host"))
+	_ = viper.BindEnv("appVersion", "CLOUDFORECAST_BAROMETER_APP_VERSION")
 
 	return nil
 }

@@ -22,3 +22,5 @@ data:
   CLOUDFORECAST_BAROMETER_API_ENDPOINT: '{{ .Values.barometerAgent.apiEndpoint }}'
 
   CLOUDFORECAST_BAROMETER_LOG_LEVEL: '{{ .Values.barometerAgent.logLevel }}'
+
+  CLOUDFORECAST_BAROMETER_APP_VERSION: '{{ .Chart.AppVersion }}'

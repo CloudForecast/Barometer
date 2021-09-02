@@ -3,14 +3,17 @@ package barometerApi
 import (
 	"fmt"
 	"github.com/rs/zerolog/log"
+	"github.com/spf13/viper"
 	"time"
 )
 
 func NewHealthCheckEvent() BarometerEvent {
+
+	appVersion := viper.GetString("appVersion")
 	return BarometerEvent{
 		EventType: HealthCheck,
 		EventTs:   time.Now().Unix(),
-		Event:     make(map[string]interface{}),
+		Event:     map[string]interface{}{"appVersion": appVersion},
 	}
 }
 
