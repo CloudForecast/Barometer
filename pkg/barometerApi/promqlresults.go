@@ -38,7 +38,7 @@ func NewPromQlResultsEvent(instructions PromQlQueryInstruction, results []PromQL
 }
 
 func (b BarometerApi) SendPromQlResultsEvent(instructions PromQlQueryInstruction, eventData []PromQLResult) error {
-	log.Debug().Msg("Sending PromQlResult data...")
+	log.Info().Msg("Sending PromQlResult data...")
 	event := NewPromQlResultsEvent(instructions, eventData)
 	statusCode, err := b.makePostRequest(event)
 	if err != nil {

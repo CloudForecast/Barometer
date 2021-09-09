@@ -9,7 +9,7 @@ import (
 )
 
 func RunAll(client barometerApi.ApiClient) (func(), error) {
-	// Health checks
+	// Set the HealthCheck Cron Job
 	stopHealthChecks, err := BeginHealthChecks(client)
 	if err != nil {
 		return nil, err
@@ -19,21 +19,11 @@ func RunAll(client barometerApi.ApiClient) (func(), error) {
 	s := gocron.NewScheduler(time.UTC)
 	cronSchedule := viper.GetString("schedule")
 
-	_, err = s.Cron(cronSchedule).SingletonMode().Do(func() {
-		go func() {
-			err := FetchAndSubmitKubernetesObjects(client)
-			if err != nil {
-				log.Error().Err(err).Msg("")
-			}
-		}()
+	// Trigger the first RunFetchAndSubmitKubernetesObjectsAndPrometheusData(client)
+	RunFetchAndSubmitKubernetesObjectsAndPrometheusData(client)
 
-		go func() {
-			err = FetchAndSubmitPrometheusData(client)
-			if err != nil {
-				log.Error().Err(err).Msg("")
-			}
-		}()
-	})
+	log.Error().Msgf("cronSchedule: %s", cronSchedule)
+	_, err = s.Cron(cronSchedule).SingletonMode().Do(func() { RunFetchAndSubmitKubernetesObjectsAndPrometheusData(client) })
 	s.StartAsync()
 
 	if err != nil {
@@ -44,4 +34,21 @@ func RunAll(client barometerApi.ApiClient) (func(), error) {
 		s.Stop()
 		stopHealthChecks()
 	}, nil
+}
+
+func RunFetchAndSubmitKubernetesObjectsAndPrometheusData(client barometerApi.ApiClient) {
+	log.Info().Msg("Triggering RunFetchAndSubmitKubernetesObjectsAndPrometheusData")
+	go func() {
+		err := FetchAndSubmitKubernetesObjects(client)
+		if err != nil {
+			log.Error().Err(err).Msg("")
+		}
+	}()
+
+	go func() {
+		err := FetchAndSubmitPrometheusData(client)
+		if err != nil {
+			log.Error().Err(err).Msg("")
+		}
+	}()
 }
