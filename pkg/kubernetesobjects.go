@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/CloudForecast/barometer/pkg/barometerApi"
 	"github.com/mitchellh/mapstructure"
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
@@ -29,7 +30,11 @@ func fetchKubernetesResources(resourceTypes []string, errorReporter ErrorReporte
 	var filteredResourceTypes []string
 	var excludedResourceTypes []string
 	for _, resourceType := range resourceTypes {
-		if DoesClusterContainResourceName(resourceType) {
+		ok, err := DoesClusterContainResourceName(resourceType)
+		if err != nil {
+			err := errors.Wrapf(err, "there was an error checking if the kubernetes cluster contains resource name \"%s\"", resourceType)
+			defer errorReporter(err)
+		} else if ok {
 			filteredResourceTypes = append(filteredResourceTypes, resourceType)
 		} else {
 			excludedResourceTypes = append(excludedResourceTypes, resourceType)
