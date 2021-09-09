@@ -43,7 +43,7 @@ func (b BarometerApi) GetKubeInstructions() (*KubeQueryInstruction, error) {
 }
 
 func (b BarometerApi) SendK8sAPIResultsEvent(eventData BarometerK8sApiResultsEventData) error {
-	log.Debug().Msg("Sending k8s API data...")
+	log.Info().Msg("Sending k8s API data...")
 	event := NewK8sApiResultsEvent(eventData)
 	statusCode, err := b.makePostRequest(event)
 	if err != nil {
