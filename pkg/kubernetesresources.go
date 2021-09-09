@@ -78,11 +78,12 @@ func DiscoverKubeResources() (map[string]schema.GroupVersionResource, error) {
 	return resources, nil
 }
 
-func DoesClusterContainResourceName(resourceName string) bool {
+func DoesClusterContainResourceName(resourceName string) (bool, error) {
 	resources, err := DiscoverKubeResources()
 	if err != nil {
-		panic(err)
+		log.Error().Err(err).Msgf("error in DoesClusterContainResourceName for resource %s", resourceName)
+		return false, err
 	}
 	_, ok := resources[resourceName]
-	return ok
+	return ok, nil
 }
