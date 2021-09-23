@@ -3,6 +3,22 @@ entries:
   cloudforecast-agent:
   - apiVersion: v2
     appVersion: 0.0.8
+    created: "2021-09-23T23:32:06.826179541Z"
+    dependencies:
+    - condition: prometheus.enabled
+      name: prometheus
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 14.3.0
+    description: A Helm chart to run CloudForecast's Barometer agent within your Kubernetes
+      cluster.
+    digest: 72404d9ce53f206919ac8f3c8feab2e39592be987cf5730478b2f25bcdf12a98
+    name: cloudforecast-agent
+    type: application
+    urls:
+    - https://github.com/CloudForecast/barometer/releases/download/cloudforecast-agent-0.8.1/cloudforecast-agent-0.8.1.tgz
+    version: 0.8.1
+  - apiVersion: v2
+    appVersion: 0.0.8
     created: "2021-09-09T23:18:34.887918033Z"
     dependencies:
     - condition: prometheus.enabled
@@ -177,4 +193,4 @@ entries:
     urls:
     - https://github.com/CloudForecast/Barometer/releases/download/cloudforecast-agent-0.1.4/cloudforecast-agent-0.1.4.tgz
     version: 0.1.4
-generated: "2021-09-09T23:18:34.887972433Z"
+generated: "2021-09-23T23:32:06.826383438Z"
