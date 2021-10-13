@@ -42,7 +42,7 @@ func NewBarometerApi(apiKey string, clusterUUID string) BarometerApi {
 		barometerApiKey: apiKey,
 		clusterUUID:     clusterUUID,
 		HTTPClient: &http.Client{
-			Timeout: 5 * time.Second,
+			Timeout: 30 * time.Second,
 		},
 		ApiHost: apiHost,
 	}
