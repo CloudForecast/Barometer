@@ -2,6 +2,7 @@ package barometerApi
 
 import (
 	"bytes"
+	"compress/gzip"
 	"encoding/json"
 	"fmt"
 	"github.com/rs/zerolog/log"
@@ -82,11 +83,17 @@ func (b BarometerApi) makePostRequest(payload interface{}) (statusCode int, err 
 		return
 	}
 
+	var buf bytes.Buffer
+	gz := gzip.NewWriter(&buf)
+	gz.Write(jsonData)
+	gz.Close()
+
 	var request *http.Request
 	urlPath := fmt.Sprint(b.ApiHost, BAROMETER_API_EVENTS_PATH)
-	if request, err = http.NewRequest("POST", urlPath, bytes.NewBuffer(jsonData)); err != nil {
+	if request, err = http.NewRequest("POST", urlPath, &buf); err != nil {
 		return
 	}
+	request.Header.Set("Content-Encoding", "gzip")
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("bm-api-key", b.barometerApiKey)
 	request.Header.Set("bm-cluster-uuid", b.clusterUUID)
