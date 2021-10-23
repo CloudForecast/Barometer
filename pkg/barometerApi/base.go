@@ -36,6 +36,12 @@ type BarometerApi struct {
 	ApiHost 		string
 }
 
+type UploadConfiguration struct {
+	EventUUID string `json:"event_uuid"`
+	S3PreSignedUrl string `json:"s3_pre_signed_url"`
+}
+
+
 func NewBarometerApi(apiKey string, clusterUUID string) BarometerApi {
 	apiHost := viper.GetString("apiHost")
 	return BarometerApi{

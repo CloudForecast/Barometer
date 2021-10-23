@@ -8,12 +8,13 @@ import (
 	"time"
 )
 
-const KUBERNETES_INSTRUCTION_PATH = "/api/barometer/v1/kubectl_instructions"
+const KUBERNETES_INSTRUCTION_PATH = "/api/barometer/v2/kubectl_instructions"
 
 type KubeKind string
 
 type KubeQueryInstruction struct {
 	KindsToFetch []KubeKind `json:"kubectl_get_queries"`
+	UploadConfiguration UploadConfiguration `json:"upload_configuration"`
 }
 
 func NewK8sApiResultsEvent(d BarometerK8sApiResultsEventData) BarometerEvent {
