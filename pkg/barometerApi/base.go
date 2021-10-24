@@ -167,6 +167,6 @@ func (b BarometerApi) UploadDataToS3(configuration UploadConfiguration, payload 
 
 	statusCode = resp.StatusCode
 	body, err := ioutil.ReadAll(resp.Body)
-	log.Info().Msgf("Data was sent to S3; statusCode:%s; body:%s", statusCode, body)
+	log.Info().Msgf("Data was sent to S3; statusCode:%v; body:%s", statusCode, body)
 	return
 }
