@@ -7,6 +7,7 @@ const (
 	Exception     BarometerEventType = "exception"
 	PromQlResults BarometerEventType = "promql_results"
 	K8sApiResults BarometerEventType = "k8s_api_results"
+	UploadedData  BarometerEventType = "uploaded_data"
 )
 
 type BarometerEvent struct {
@@ -42,4 +43,9 @@ type PromQLResult struct {
 	Query               string              `json:"query" mapstructure:"query"`
 	PromQlConfiguration PromQlConfiguration `json:"promql_configuration" mapstructure:"promql_configuration"`
 	Result              []interface{}       `json:"result" mapstructure:"result"`
+}
+
+type PromQLResultsWrapper struct {
+	PromQlConfiguration PromQlConfiguration
+	Results 			[]PromQLResult
 }

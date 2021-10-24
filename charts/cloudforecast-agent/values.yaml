@@ -25,7 +25,7 @@ barometerAgent:
   prometheusUrlOverride: ''
 
   # The schedule, cron-style, on which
-  cronSchedule: "15 * * * *"
+  cronSchedule: "auto-generated"
 
   # Any additional CLI arguments to supply to the Cloudforecast agent
   additionalArgs: []

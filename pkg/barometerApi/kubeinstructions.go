@@ -43,15 +43,23 @@ func (b BarometerApi) GetKubeInstructions() (*KubeQueryInstruction, error) {
 	return &instructions, nil
 }
 
-func (b BarometerApi) SendK8sAPIResultsEvent(eventData BarometerK8sApiResultsEventData) error {
+func (b BarometerApi) SendK8sAPIResults(instruction *KubeQueryInstruction, eventData BarometerK8sApiResultsEventData) error {
 	log.Info().Msg("Sending k8s API data...")
 	event := NewK8sApiResultsEvent(eventData)
-	statusCode, err := b.makePostRequest(event)
+
+	// Upload data to S3
+	statusCode, err := b.UploadDataToS3(instruction.UploadConfiguration, event)
 	if err != nil {
 		return err
 	}
 	if statusCode != 200 {
-		return fmt.Errorf("received unexpected status code %d from kubernetes API data submission", statusCode)
+		return fmt.Errorf("received unexpected status code %d from SendK8sAPIResults when sending the data to S3", statusCode)
+	}
+
+	// Send UploadedDataEvent
+	err = b.SendUploadedDataEvent(instruction.UploadConfiguration.EventUUID, K8sApiResults)
+	if err != nil {
+		return err
 	}
 	return nil
 }

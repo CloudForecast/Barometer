@@ -7,7 +7,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/api"
-	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
+	"github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/common/model"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
@@ -52,7 +52,7 @@ func ExecutePromQLQuery(v1api v1.API, query string, start time.Time, end time.Ti
 	return result, nil
 }
 
-func followPromQlInstructions(instruction *barometerApi.PromQlQueryInstruction, resultsChan chan<- []barometerApi.PromQLResult, errorsChan chan<- error) {
+func followPromQlInstructions(instruction *barometerApi.PromQlQueryInstruction, resultsChan chan<- barometerApi.PromQLResultsWrapper, errorsChan chan<- error) {
 	promClient := NewPrometheusAPIClient()
 
 	// If needed, this could be parallelized later. For now, a simple loop should suffice.
@@ -79,7 +79,10 @@ func followPromQlInstructions(instruction *barometerApi.PromQlQueryInstruction, 
 				configurationResults = append(configurationResults, result)
 			}
 		}
-		resultsChan <- configurationResults
+		resultsChan <- barometerApi.PromQLResultsWrapper{
+			PromQlConfiguration: config,
+			Results: configurationResults,
+		}
 	}
 	close(resultsChan)
 	close(errorsChan)
@@ -91,18 +94,18 @@ func FetchAndSubmitPrometheusData(b barometerApi.ApiClient) error {
 		return errors.Wrap(err, "issue getting promql instructions")
 	}
 
-	resultsChan := make(chan []barometerApi.PromQLResult)
+	resultsChan := make(chan barometerApi.PromQLResultsWrapper)
 	errorsChan := make(chan error)
 	var errorList []error
 	go followPromQlInstructions(instructions, resultsChan, errorsChan)
 
 	for resultsChan != nil || errorsChan != nil {
 		select {
-		case results, ok := <-resultsChan:
+		case promQLResultsWrapper, ok := <-resultsChan:
 			if !ok {
 				resultsChan = nil
 			} else {
-				err = b.SendPromQlResultsEvent(*instructions, results)
+				err = b.SendPromQlResults(*instructions, promQLResultsWrapper)
 				if err != nil {
 					log.Error().Err(err).Msg("Error sending promql results event")
 					errorList = append(errorList, err)
