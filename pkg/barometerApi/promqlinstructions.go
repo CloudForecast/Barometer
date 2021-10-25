@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 )
 
-const PromqlInstructionPath = "/api/barometer/v1/promql_instructions"
+const PromqlInstructionPath = "/api/barometer/v2/promql_instructions"
 
 type PromQlConfiguration struct {
 	StartTs int `json:"start_ts"`
 	EndTs   int `json:"end_ts"`
 	StepSec int `json:"step_sec"`
+	UploadConfiguration UploadConfiguration `json:"upload_configuration"`
 }
 
 // PromQlQueryName is the name of an individual Prometheus query provided by the Barometer API.

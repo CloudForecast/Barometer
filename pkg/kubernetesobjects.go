@@ -74,13 +74,7 @@ func fetchKubernetesResources(resourceTypes []string, errorReporter ErrorReporte
 	return outputResults, nil
 }
 
-func fetchAndRunKubeInstructions(b barometerApi.ApiClient) (*barometerApi.BarometerK8sApiResultsEventData, error) {
-	queryInstructions, err := b.GetKubeInstructions()
-	if err != nil {
-		return nil, err
-	}
-
-	kindsToFetch := queryInstructions.KindsToFetch
+func fetchAndRunKubeInstructions(b barometerApi.ApiClient, kindsToFetch []barometerApi.KubeKind) (*barometerApi.BarometerK8sApiResultsEventData, error) {
 	if len(kindsToFetch) == 0 {
 		log.Warn().Msg("no k8s kinds returned from barometer API to fetch")
 		return nil, nil
@@ -127,7 +121,12 @@ func fetchAndRunKubeInstructions(b barometerApi.ApiClient) (*barometerApi.Barome
 }
 
 func FetchAndSubmitKubernetesObjects(b barometerApi.ApiClient) error {
-	results, err := fetchAndRunKubeInstructions(b)
+	queryInstructions, err := b.GetKubeInstructions()
+	if err != nil {
+		return err
+	}
+
+	results, err := fetchAndRunKubeInstructions(b, queryInstructions.KindsToFetch)
 	if err != nil {
 		return err
 	}
@@ -136,7 +135,7 @@ func FetchAndSubmitKubernetesObjects(b barometerApi.ApiClient) error {
 	}
 
 	log.Debug().Msg("sending k8s result data to Barometer...")
-	err = b.SendK8sAPIResultsEvent(*results)
+	err = b.SendK8sAPIResults(queryInstructions, *results)
 	if err != nil {
 		return err
 	}

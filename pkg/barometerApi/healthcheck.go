@@ -3,23 +3,20 @@ package barometerApi
 import (
 	"fmt"
 	"github.com/rs/zerolog/log"
-	"github.com/spf13/viper"
 	"time"
 )
 
-func NewHealthCheckEvent() BarometerEvent {
-
-	appVersion := viper.GetString("appVersion")
+func NewHealthCheckEvent(info map[string]interface{}) BarometerEvent {
 	return BarometerEvent{
 		EventType: HealthCheck,
 		EventTs:   time.Now().Unix(),
-		Event:     map[string]interface{}{"appVersion": appVersion},
+		Event:     info,
 	}
 }
 
-func (b BarometerApi) SendHealthCheckEvent() error {
+func (b BarometerApi) SendHealthCheckEvent(info map[string]interface{}) error {
 	log.Debug().Msg("Sending health check...")
-	event := NewHealthCheckEvent()
+	event := NewHealthCheckEvent(info)
 	statusCode, err := b.makePostRequest(event)
 	if err != nil {
 		return err
@@ -29,3 +26,5 @@ func (b BarometerApi) SendHealthCheckEvent() error {
 	}
 	return nil
 }
+
+

@@ -37,15 +37,22 @@ func NewPromQlResultsEvent(instructions PromQlQueryInstruction, results []PromQL
 	}
 }
 
-func (b BarometerApi) SendPromQlResultsEvent(instructions PromQlQueryInstruction, eventData []PromQLResult) error {
+func (b BarometerApi) SendPromQlResults(instructions PromQlQueryInstruction, promQLResultsWrapper PromQLResultsWrapper) error {
 	log.Info().Msg("Sending PromQlResult data...")
-	event := NewPromQlResultsEvent(instructions, eventData)
-	statusCode, err := b.makePostRequest(event)
+	event := NewPromQlResultsEvent(instructions, promQLResultsWrapper.Results)
+
+	// Upload data to S3
+	statusCode, err := b.UploadDataToS3(promQLResultsWrapper.PromQlConfiguration.UploadConfiguration, event)
 	if err != nil {
 		return err
 	}
 	if statusCode != 200 {
-		return fmt.Errorf("received unexpected status code %d from prometheus API data submission", statusCode)
+		return fmt.Errorf("received unexpected status code %d from SendPromQlResults when sending the data to S3", statusCode)
+	}
+
+	err = b.SendUploadedDataEvent(promQLResultsWrapper.PromQlConfiguration.UploadConfiguration.EventUUID, PromQlResults)
+	if err != nil {
+		return err
 	}
 	return nil
 }
